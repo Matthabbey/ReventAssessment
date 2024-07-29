@@ -4,26 +4,10 @@ const bodyParser = require("body-parser");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const { Sequelize, DataTypes } = require("sequelize");
-const swaggerUi = require("swagger-ui-express");
-const swaggerJsdoc = require("swagger-jsdoc");
 
 const app = express();
 app.use(bodyParser.json());
 
-const options = {
-  definition: {
-    openapi: "3.0.0",
-    info: {
-      title: "User Service API",
-      version: "1.0.0",
-    },
-  },
-  apis: ["./index.js"], // Path to the API docs
-};
-
-const specs = swaggerJsdoc(options);
-
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 
 const sequelize = new Sequelize(process.env.DATABASE_URL);
 
@@ -66,7 +50,7 @@ app.post("/login", async (req, res) => {
 });
 
 app.get("/profile", async (req, res) => {
-  const token = req.headers["authorization"].split(" ")[1];
+  const token = req.headers["authorization"]?.split(" ")[1];
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const user = await User.findByPk(decoded.userId);
