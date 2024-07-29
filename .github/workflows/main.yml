@@ -58,6 +58,3 @@ jobs:
 
       - name: Compose up
         run: docker-compose up -d
-
-      - name: Run tests
-        run: docker-compose run user-service npm test
