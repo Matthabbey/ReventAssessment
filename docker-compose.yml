@@ -1,0 +1,110 @@
+version: '3.8'
+
+services:
+  postgres-users:
+    image: postgres:13
+    environment:
+      POSTGRES_DB: users
+      POSTGRES_USER: username
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+
+  user-service:
+    build:
+      context: ./user-service
+    environment:
+      DATABASE_URL: postgres://username:password@postgres-users:5432/users
+      JWT_SECRET: your_jwt_secret
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres-users
+
+  postgres-admin:
+    image: postgres:13
+    environment:
+      POSTGRES_DB: admin
+      POSTGRES_USER: username
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5433:5432"
+
+  admin-service:
+    build:
+      context: ./admin-service
+    environment:
+      DATABASE_URL: postgres://username:password@postgres-admin:5432/admin
+      JWT_SECRET: your_jwt_secret
+    ports:
+      - "3001:3001"
+    depends_on:
+      - postgres-admin
+
+  postgres-products:
+    image: postgres:13
+    environment:
+      POSTGRES_DB: products
+      POSTGRES_USER: username
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5434:5432"
+
+  product-service:
+    build:
+      context: ./product-service
+    environment:
+      DATABASE_URL: postgres://username:password@postgres-products:5432/products
+      JWT_SECRET: your_jwt_secret
+    ports:
+      - "3002:3002"
+    depends_on:
+      - postgres-products
+
+  postgres-orders:
+    image: postgres:13
+    environment:
+      POSTGRES_DB: orders
+      POSTGRES_USER: username
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5435:5432"
+
+  order-service:
+    build:
+      context: ./order-service
+    environment:
+      DATABASE_URL: postgres://username:password@postgres-orders:5432/orders
+      JWT_SECRET: your_jwt_secret
+    ports:
+      - "3003:3003"
+    depends_on:
+      - postgres-orders
+
+  redis:
+    image: redis:6.2
+    ports:
+      - "6379:6379"
+
+  postgres-auctions:
+    image: postgres:13
+    environment:
+      POSTGRES_DB: auctions
+      POSTGRES_USER: username
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5436:5432"
+
+  auction-service:
+    build:
+      context: ./auction-service
+    environment:
+      DATABASE_URL: postgres://username:password@postgres-auctions:5432/auctions
+      JWT_SECRET: your_jwt_secret
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    ports:
+      - "3004:3004"
+    depends_on:
+      - redis
+      - postgres-auctions
